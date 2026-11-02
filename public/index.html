@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Овощебазы — доска партий</title>
+  <link rel="stylesheet" href="/css/board.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <p class="eyebrow">Оптовая доска</p>
+      <h1>Партии овощей на сегодня</h1>
+    </div>
+    <p class="who" id="who" hidden></p>
+  </header>
+
+  <main id="home">
+    <section class="lead">
+      <p>Базы смотрят живые цены и пишут друг другу напрямую. Сайт не принимает деньги за товар и не везёт заказ.</p>
+      <p>Доступ к витрине открывается после оплаты на расчётный счёт ИП. Логин и пароль появляются один раз, когда банк подтвердил платёж.</p>
+    </section>
+    <section class="facts">
+      <article>
+        <h2>Для продавца</h2>
+        <p>Партия, цена и объём. На следующий день достаточно нажать «Актуализировать», если условия те же.</p>
+      </article>
+      <article>
+        <h2>Для покупателя</h2>
+        <p>Таблица на одном экране. Если партии нет, заявка «ищу» видна продавцам вместе с телефоном.</p>
+      </article>
+    </section>
+  </main>
+
+  <section id="board" hidden>
+    <div class="filters">
+      <input id="q" placeholder="Товар или сорт" aria-label="Поиск">
+      <select id="fresh" aria-label="Свежесть">
+        <option value="">Все даты</option>
+        <option value="today">Только за сегодня</option>
+        <option value="24h">За 24 часа</option>
+      </select>
+      <select id="caliber" aria-label="Калибр"><option value="">Калибр</option></select>
+      <select id="pack" aria-label="Упаковка">
+        <option value="">Упаковка</option>
+        <option>сетка</option>
+        <option>навал</option>
+      </select>
+      <select id="condition" aria-label="Состояние">
+        <option value="">Состояние</option>
+        <option>мытый</option>
+        <option>грязный</option>
+        <option>из хранилища</option>
+      </select>
+      <select id="city" aria-label="Город"><option value="">Город</option></select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Товар</th><th>Сорт</th><th>Калибр</th><th>Объём, т</th><th>₽/кг</th><th>НДС</th><th>Город / база</th><th>Обновлено</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="work">
+      <form id="lot-form" class="card">
+        <h2>Новая партия</h2>
+        <div class="grid">
+          <input name="product" placeholder="Товар" required>
+          <input name="variety" placeholder="Сорт">
+          <input name="caliber" placeholder="Калибр, например 5+">
+          <input name="volumeTons" type="number" min="0.1" step="0.1" placeholder="Тонн" required>
+          <input name="pricePerKg" type="number" min="0.01" step="0.01" placeholder="Цена за кг" required>
+          <input name="city" placeholder="Город">
+          <select name="pack"><option value="">Упаковка</option><option>сетка</option><option>навал</option></select>
+          <select name="condition"><option value="">Состояние</option><option>мытый</option><option>грязный</option><option>из хранилища</option></select>
+          <label class="check"><input name="vat" type="checkbox" checked> Цена с НДС</label>
+        </div>
+        <button type="submit">Выставить</button>
+        <p class="hint">Контакты в строке берутся из профиля ниже. Их видно только после кнопки «Показать контакты».</p>
+      </form>
+      <form id="profile-form" class="card">
+        <h2>Контакты менеджера</h2>
+        <input name="phone" placeholder="Телефон">
+        <input name="whatsapp" placeholder="Ссылка WhatsApp">
+        <input name="telegram" placeholder="Ссылка Telegram">
+        <button type="submit">Сохранить</button>
+      </form>
+      <form id="demand-form" class="card">
+        <h2>Спрос</h2>
+        <textarea name="text" rows="3" placeholder="Ищу лук от 20 тонн"></textarea>
+        <input name="city" placeholder="Город">
+        <input name="phone" placeholder="Телефон для звонка">
+        <button type="submit">Опубликовать заявку</button>
+        <ul id="demands"></ul>
+      </form>
+    </div>
+  </section>
+
+  <button class="rack" id="rack" type="button" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+  <nav class="menu" id="menu" hidden>
+    <button type="button" id="open-login">Личный кабинет</button>
+    <button type="button" id="open-contacts">Контакты</button>
+    <button type="button" id="logout" hidden>Выйти</button>
+  </nav>
+
+  <dialog id="login-dialog">
+    <form id="login-form" method="dialog">
+      <h2>Вход</h2>
+      <input name="login" autocomplete="username" placeholder="Логин" required>
+      <input name="password" type="password" autocomplete="current-password" placeholder="Пароль" required>
+      <label class="check"><input name="remember" type="checkbox"> Запомнить меня</label>
+      <p id="captcha-line" hidden>Сколько будет <strong id="captcha-q"></strong>?</p>
+      <input id="captcha-a" hidden inputmode="numeric" placeholder="Ответ">
+      <p class="error" id="login-error"></p>
+      <button type="submit">Войти</button>
+    </form>
+    <form id="pay-form">
+      <h2>Нет доступа</h2>
+      <p>Оплата <strong id="price">…</strong> на расчётный счёт ИП. После подтверждения банка здесь появятся логин и пароль.</p>
+      <input name="baseName" placeholder="Название базы" required>
+      <button type="submit">Получить ссылку на оплату</button>
+      <p class="error" id="pay-error"></p>
+    </form>
+    <button type="button" class="text" id="close-login">Закрыть</button>
+  </dialog>
+
+  <dialog id="contacts-dialog">
+    <h2>Площадка</h2>
+    <p>По вопросам доступа пишите хозяину доски. Телефоны овощебаз здесь не показываются: они открываются в строке партии.</p>
+    <p>Почта: <a href="mailto:access@verasaeng.ru">access@verasaeng.ru</a></p>
+    <button type="button" class="text" id="close-contacts">Закрыть</button>
+  </dialog>
+
+  <script src="/js/board.js"></script>
+</body>
+</html>
